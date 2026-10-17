@@ -13,7 +13,7 @@
 
 [Preview](#preview) •
 [Architecture](#architecture) •
-[Getting Started](#getting-started) •
+[Installation](#installation) •
 [Building](#building) •
 [Contributing](#contributing) •
 [License](#license)
@@ -75,7 +75,28 @@ liner/desktop/
 
 ---
 
-## Getting Started
+## Installation
+
+ - #### Windows:
+   * Follow [this link](https://github.com/tryliner/desktop/releases/latest), find a `.exe` file, download and run it.
+   * If Windows shows “Windows protected your PC”, click More info → Run anyway.
+
+ - #### MacOS:
+   * Go [here](https://github.com/tryliner/desktop/releases/latest) and download a `.dmg` file. Open the `.dmg` and drag Liner into Applications. If macOS says the app can't be opened, right-click Liner in Applications → Open.
+   * Apple Silicon or Intel? Apple menu → About This Mac: Chip Apple M… = Apple Silicon. Otherwise = Intel
+
+ - #### Linux (Debian, Ubuntu, Mint & Ubuntu-based systems): 
+   * Follow [this link](https://github.com/tryliner/desktop/releases/latest), find a `.deb` file and download it. Open it with your software center or run `sudo apt install ./liner_*.deb`
+   
+ - #### Linux (AppImage): 
+   * Follow [this link](https://github.com/tryliner/desktop/releases/latest), download a `.AppImage` file. Right-click the file → Properties → Allow executing as program (or `chmod +x Liner-*.AppImage`), then open it.
+
+ - #### Android/iOS: 
+   * As of Oct 17 2026, the mobile version of Liner is planned to come out in November 2026 for both Android and iOS.
+
+---
+
+## Building
 
 ### Prerequisites
 
@@ -96,7 +117,21 @@ pnpm install
 # or
 bun install
 ```
+---
 
+### Compiling
+
+```bash
+# Build desktop packages for your current OS:
+
+# Linux (AppImage & .deb)
+bun run electron:build:linux
+
+# Windows (.exe installer)
+bun run electron:build:win
+```
+
+#### Compiled distributions will be placed in the `release/` directory.
 ---
 
 ### Running in Development
@@ -110,7 +145,7 @@ bun run dev
 
 ---
 
-## Testing
+### Testing
 
 ```bash
 # Run test suite with Vitest
@@ -121,25 +156,15 @@ pnpm test
 
 ---
 
-## Building
-
-```bash
-# Build desktop packages for your current OS:
-
-# Linux (AppImage & .deb)
-bun run electron:build:linux
-
-# Windows (.exe installer)
-bun run electron:build:win
-```
-
-Compiled distributions will be placed in the `release/` directory.
-
----
-
 ## Contributing
 
-Bug fixes, small features, and docs fixes are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) before you open a pull request. The [license](./LICENSE) limits what a fork is allowed to do.
+Contributions, bug fixes, and feature enhancements are welcome:
+
+1. Fork the repository.
+2. Create your feature branch (`git checkout -b feat/my-feature`).
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`).
+4. Push to your branch (`git push origin feat/my-feature`).
+5. Open a Pull Request to `tryliner/desktop`.
 
 ---
 
