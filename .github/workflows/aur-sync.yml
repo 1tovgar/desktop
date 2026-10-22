@@ -29,16 +29,16 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: aur-sync
-  cancel-in-progress: false
+# the sync job below carries the concurrency group, so the whole run does not
+# have to fight over the same lock its own job needs
 
 jobs:
   sync:
     name: Sync AUR packages
     runs-on: ubuntu-latest
     # the same group as release.yml's sync-aur job: a tag being pushed at
-    # 04:23 must not collide with the cron's refresh
+    # 04:23 must not collide with the cron's refresh. concurrency groups are
+    # repo-wide, so this serializes against release.yml across workflows.
     concurrency:
       group: aur-sync
       cancel-in-progress: false
