@@ -72,7 +72,7 @@ checksums are refreshed — that is what `bump.sh` is for.
 ### The lifecycle of a release
 
 1. A release is tagged and GitHub publishes `liner_<version>_amd64.deb`.
-2. `aur-sync.yml` runs (on the release, or on its daily cron fallback) and
+2. `release.yml`'s `sync-aur` job runs after the release is published and
    calls `bump.sh`, which sets `pkgver` and recomputes the checksums.
 3. `publish.sh` regenerates both `.SRCINFO` files and pushes the recipes to
    the two AUR repositories.
@@ -176,22 +176,31 @@ everything to the AUR.
 
 ### Automatic sync
 
-`.github/workflows/aur-sync.yml` does the same thing on every upstream
-release, with a daily cron job as a fallback (the release is published
-before the linux artifacts are uploaded, so the workflow waits for the `.deb`
-to appear). The cron job also refreshes the recorded version of
-`liner-desktop-git`, which follows the upstream branch.
+Two jobs keep the AUR current; no manual step is needed on a release day:
 
-To enable it, add the private key of the AUR account as the `AUR_SSH_KEY`
-secret of the repository:
+- `release.yml`'s `sync-aur` job runs on every tag, after the release is
+  published. It bumps `-bin` to the tagged version (downloading and hashing the
+  new `.deb`) and pushes both recipes.
+- `aur-sync.yml` runs daily (and can be run manually from the Actions tab).
+  Without a version argument it only refreshes the recorded version of
+  `liner-desktop-git`, which follows the upstream branch — the `-bin` recipe
+  does not change between releases, so it reports "no changes, skipping".
+
+  With a version argument it does the full bump instead. Use that path if a
+  release was ever published by hand rather than via a tag: an upload through
+  the GitHub web UI does not push a tag, so `release.yml` would not run.
+
+To enable any of this, add the private key of the AUR account as the
+`AUR_SSH_KEY` secret of the repository:
 
 ```sh
 gh secret set AUR_SSH_KEY < ~/.ssh/id_aur
 ```
 
-The workflow pushes to the AUR over ssh using that key; the AUR host key is
-pinned in the workflow file. Update it there if the AUR host key ever
-rotates.
+Both jobs fail loudly while the secret is missing — that is the signal that
+setup is incomplete. The workflow pushes to the AUR over ssh using that key;
+the AUR host key is pinned in the workflow files. Update them if the AUR host
+key ever rotates.
 
 ## Notes
 
