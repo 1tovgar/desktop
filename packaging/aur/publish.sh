@@ -113,6 +113,11 @@ for pkg in "${packages[@]}"; do
     continue
   fi
 
+  # the runner has no git identity configured; write one into this throwaway
+  # clone only so the commit succeeds regardless of the global config
+  git -C "$dest" config user.name "liner-aur-sync"
+  git -C "$dest" config user.email "aur-sync@tryliner.fun"
+
   git -C "$dest" add -A
   git -C "$dest" commit --quiet -m "sync to ${version}"
   git -C "$dest" push --quiet
