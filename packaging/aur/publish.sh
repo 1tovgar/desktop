@@ -56,8 +56,11 @@ refresh_vcs_version() {
   tmp="$(mktemp -d)"
   if ! git clone --quiet --mirror "$url" "${tmp}/desktop"; then
     rm -rf "$tmp"
-    echo "    could not clone ${url}, keeping the recorded version" >&2
-    return 0
+    # gen_srcinfo has already written the static fallback into .SRCINFO:
+    # pushing that would take the AUR page backwards, so publish nothing. the
+    # next run retries.
+    echo "    could not clone ${url}, skipping this package" >&2
+    return 1
   fi
 
   # reuse the recipe's own pkgver() so both always agree
@@ -65,8 +68,8 @@ refresh_vcs_version() {
   rm -rf "$tmp"
 
   if [ -z "$version" ]; then
-    echo "    could not determine the vcs version, keeping the recorded one" >&2
-    return 0
+    echo "    could not determine the vcs version, skipping this package" >&2
+    return 1
   fi
 
   sed -i -E "s/^([[:space:]]*pkgver = ).*/\1${version}/" "$dir/.SRCINFO"
@@ -79,7 +82,10 @@ for pkg in "${packages[@]}"; do
 
   echo "==> ${pkg}"
   gen_srcinfo "$src"
-  refresh_vcs_version "$src"
+  if ! refresh_vcs_version "$src"; then
+    echo "    leaving the AUR copy of ${pkg} untouched"
+    continue
+  fi
 
   if ! git clone --quiet "ssh://aur@${aur_host}/${pkg}.git" "$dest"; then
     echo "error: cannot clone ssh://aur@${aur_host}/${pkg}.git" >&2
